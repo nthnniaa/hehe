@@ -1,0 +1,6 @@
+    public function index()
+    {
+        return view('mengajar.index', [
+            'mengajar' => Mengajar::all()
+        ]);
+    }
