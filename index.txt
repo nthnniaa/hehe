@@ -1,129 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Penilaian Siswa</title>
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-</head>
-<body>
-    @include('partials.header')
+@extends('layout.main')
+@section('content')
+    <center>
+        <b>
+            <h2>LIST DATA SISWA</h2>
+            @if (session('role') =='guru')
+                <a href="/nilai/create/{{ $idKelas }}" class="button-primary">Tambah Data</a>
+            @endif
 
-    <div class="menu">
-        <a href="/" class="active">Home</a>
-    </div>
-
-    <div class="kiri-atas">
-        <fieldset>
-            <center>
-                <button class="button-primary" onclick="tampilkan_login_admin()">Admin</button>
-                <button class="button-primary" onclick="tampilkan_login_guru()">Guru</button>
-                <button class="button-primary" onclick="tampilkan_login_siswa()">Siswa</button>
-                <hr>
-                Pilih login yang sesuai dengan posisi anda
-            </center>
-
-            <div id="login_admin" class="container-login" style="display: none">
-                <center>
-                    <b>Login Admin</b>
-                    <p>{{ session('error') }}</p>
-                </center>
-                <form action="/login_admin" method="post">
-                    @csrf
-                        <table>
-                            <tr>
-                                <td width="25%"><strong>Kode Admin</strong></td>
-                                <td width="25%" style="text-align: right">
-                                    <input type="text" name="kode_admin" maxlength="25" required>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td width="25%"><strong>Password</strong></td>
-                                <td width="25%" style="text-align: right">
-                                    <input type="password" name="password" maxlength="10" required>
-                                </td>
-                            </tr>
-                        </table>
-                        <button class="button-submit" type="submit" name="button">Login</button>
-                </form>
-            </div>
-
-            <div id="login_guru" class="container-login" style="display: none">
-                <center>
-                    <b>Login Guru</b>
-                    <p>{{ session('error') }}</p>
-                </center>
-                <form action="/login_guru" method="post">
-                    @csrf
-                        <table>
-                            <tr>
-                                <td width="25%"><strong>NIP</strong></td>
-                                <td width="25%" style="text-align: right">
-                                    <input type="text" name="nip" maxlength="25" required>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td width="25%"><strong>Password</strong></td>
-                                <td width="25%" style="text-align: right">
-                                    <input type="password" name="password" maxlength="10" required>
-                                </td>
-                            </tr>
-                        </table>
-                        <button class="button-submit" type="submit" name="button">Login</button>
-                </form>
-            </div>
-
-            <div id="login_siswa" class="container-login" style="display: none">
-                <center>
-                    <b>Login Siswa</b>
-                    <p>{{ session('error') }}</p>
-                </center>
-                <form action="/login_siswa" method="post">
-                    @csrf
-                        <table>
-                            <tr>
-                                <td width="25%"><strong>NIS</strong></td>
-                                <td width="25%" style="text-align: right">
-                                    <input type="text" name="nis" maxlength="25" required>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td width="25%"><strong>Password</strong></td>
-                                <td width="25%" style="text-align: right">
-                                    <input type="password" name="password" maxlength="10" required>
-                                </td>
-                            </tr>
-                        </table>
-                        <button class="button-submit" type="submit" name="button">Login</button>
-                </form>
-            </div>
-        </fieldset>
-    </div>
-
-    <div class="kanan">
-        <center>
-            <h1>
-                SELAMAT DATANG
-                <br>
-                Di Website Penilaian SMK Negeri 1 Cibinong
-            </h1>
-        </center>
-    </div>
-
-    <div class="kiri-bawah">
-        <center>
-            <b>
-                <p class="mar">Gallery</p>
-                <div class="gallery">
-                    <img src="{{ asset('img/foto-siswa.jpg') }}" alt="galeri">
-                    <div class="deskripsi">SMK BISA {{ date('Y') }}</div>
+            @if (session('success'))
+                <div class="alert alert-success">
+                    <span class="closebtn" id="closeBtn">&times;</span>{{ session('success') }}
                 </div>
-            </b>
-        </center>
-    </div>
+            @endif
 
-    @include('partials.footer')
-</body>
-    <script src="/js/script.js"></script>
-</html>
+            @if (session('error'))
+                <div class="alert alert-danger">
+                    <span class="closebtn" id="closeBtn">&times;</span>{{ session('error') }}
+                </div>
+            @endif
+
+            <table class="table-data">
+                <thead>
+                    <tr>
+                        <th>NO</th>
+                        <th>GURU</th>
+                        <th>MAPEL</th>
+                        <th>NAMA SISWA</th>
+                        <th>UH</th>
+                        <th>UTS</th>
+                        <th>UAS</th>
+                        <th>NA</th>
+                            @if (session('role') == 'guru')
+                                <th>ACTION</th>
+                            @endif
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach ( $nilai as $each )
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $each->mengajar->guru->nama_guru }}</td>
+                            <td>{{ $each->mengajar->mapel->nama_mapel }}</td>
+                            <td>{{ $each->siswa->nama_siswa }}</td>
+                            <td>{{ $each->uh }}</td>
+                            <td>{{ $each->uts }}</td>
+                            <td>{{ $each->uas }}</td>
+                            <td>{{ $each->na }}</td>
+                            @if (session('role') == 'guru')
+                                <td style="text-align: center">
+                                    <a href="/nilai/edit/{{ $idKelas }}/{{ $each->id }}" class="button-warning">EDIT</a>
+                                    <a href="/nilai/destroy/{{ $each->id }}" class="button-danger" onclick="return confirm('Yakin Hapus Data?')">HAPUS</a>
+                                </td>
+                            @endif
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </b>
+    </center>
+@endsection
